@@ -1,0 +1,111 @@
+\documentclass[10pt,a4paper,fontset=windows]{ctexart}
+
+\usepackage[left=1.4cm,right=1.4cm,top=1.2cm,bottom=1.2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\setCJKmainfont{simfang.ttf}[BoldFont=simhei.ttf]
+
+\definecolor{maincolor}{HTML}{1F4E79}
+\definecolor{subcolor}{HTML}{595959}
+\definecolor{accent}{HTML}{C00000}
+
+\hypersetup{colorlinks=true,urlcolor=maincolor}
+
+\titleformat{\section}
+  {\color{maincolor}\large\bfseries}{}{0em}{}
+  [{\color{maincolor}\titlerule[0.6pt]}]
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+
+\titleformat{\subsection}
+  {\color{maincolor}\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\subsection}{0pt}{4pt}{2pt}
+
+\setlist[itemize]{leftmargin=1.3em,topsep=0pt,itemsep=0pt,parsep=0pt,label={\color{maincolor}\textbullet}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\linespread{1.1}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE\bfseries\color{maincolor} 电商用户行为与人群分层分析}\\[3pt]
+    {\color{subcolor} UCI Online Retail II 数据集 \textbar{} 分析者：张仲慈 \textbar{} 2026 年 10 月}
+\end{center}
+
+\vspace{4pt}
+
+\section*{项目概述}
+
+基于一家英国跨境电商 2009--2011 两年的真实交易数据，完成\textbf{数据清洗 $\to$ 探索性分析 $\to$ RFM 人群分层}全流程，输出可供推广投放圈选使用的客户分群明细。目标是通过量化方法识别核心客户、定位增长机会，为差异化运营提供决策依据。
+
+\section*{数据概况}
+
+\begin{tabular}{@{}p{3.2cm}p{4.5cm}p{3.2cm}p{5.5cm}@{}}
+    \textbf{原始交易} & 1{,}067{,}371 行 & \textbf{时间跨度} & 2009-12 $\to$ 2011-12（2 年） \\
+    \textbf{清洗后} & 779{,}425 行（保留 73\%） & \textbf{覆盖国家} & 40+（UK 占 82.82\%） \\
+    \textbf{唯一客户} & 5{,}878 & \textbf{唯一订单} & 36{,}969 \\
+\end{tabular}
+
+\textbf{清洗策略}：剔除缺失 Customer ID（22.8\%）、退款单（Invoice 以 C 开头，1.83\%）、异常价格（Price $\le$ 0）、Quantity $\le$ 0 的记录及完全重复行。衍生订单金额 \texttt{TotalPrice = Quantity $\times$ Price} 及时间维度字段。
+
+\section*{关键业务洞察}
+
+\begin{itemize}
+    \item \textbf{销售节律}：10--11 月为旺季高峰（吻合圣诞礼品批发备货周期），TOP3 月份为 2010-11、2011-10、2011-11
+    \item \textbf{市场结构}：UK 本土贡献 82.82\%，海外 TOP5 为 EIRE、Germany、France、Netherlands、Spain，是明显的"本土为主、欧洲 B2B"业态
+    \item \textbf{运营特征}：周六订单量近零，典型 B2B 工作日作息；下单高峰集中在工作日 10:00--15:00
+    \item \textbf{客户结构}：一次性客户占 27.6\%，复购运营是关键增长点；\textbf{Top 20\% 客户贡献 77.23\% 销售额}，经典二八法则在该数据上成立
+\end{itemize}
+
+\section*{RFM 分层结果}
+
+对 5{,}878 位客户按 Recency / Frequency / Monetary 五分位打分（1--5），依组合规则划分为五群。核心对比：
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lrrrrl@{}}
+    \toprule
+    \textbf{群组} & \textbf{客户数} & \textbf{客户占比} & \textbf{销售额占比} & \textbf{人均消费（£）} & \textbf{运营建议} \\
+    \midrule
+    \color{accent}\textbf{高价值} & 1{,}297 & 22.1\% & \color{accent}\textbf{68.3\%} & 7{,}964 & 核心金主，重点维护与增值 \\
+    沉睡 & 1{,}955 & 33.3\% & 23.5\% & 1{,}820 & \textbf{召回 ROI 最高}，重点触达 \\
+    潜力 & 1{,}067 & 18.2\% & 6.0\% & 850 & 培育升级为高价值 \\
+    流失 & 1{,}280 & 21.8\% & 1.9\% & 221 & 低成本唤醒或放弃 \\
+    其他 & 279 & 4.7\% & 0.5\% & 275 & 常规维系 \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+\textit{\color{subcolor}注：人均消费为示意值，以实际 CSV 为准。}
+
+\textbf{核心结论}：高价值与流失群客户数相当（均约 22\%），但\textbf{销售额贡献相差约 36 倍}，差异化运营策略可带来显著 ROI 提升；沉睡群贡献 23.5\% 销售额却接近非活跃状态，为召回触达的最高优先级。
+
+\section*{方法与工具}
+
+\textbf{分析流程}：pandas 完成数据读取 / 清洗 / 聚合；matplotlib + seaborn 产出 8 张可视化（月度趋势、国家分布、时段模式、客户分布、人群对比、R--F 热力图）；按业务规则定义分群逻辑，产出 \texttt{customer\_segments.csv} 作为交付物。
+
+\textbf{工具栈}：Python 3.11、pandas、numpy、matplotlib、seaborn、Jupyter Lab；venv 管理项目依赖。
+
+\section*{局限与下一步}
+
+\begin{itemize}
+    \item RFM 为时点快照，未覆盖客户动态迁移；下一步可加入分群稳定性验证（滑动快照窗口）
+    \item 规则法分群简洁易解释，但在边界样本上不如 KMeans 等聚类灵活；可对比两种方法的业务一致性
+    \item 建模侧可延展为客户生命周期价值（CLV）预测与升级概率模型，支撑更前瞻的运营决策
+\end{itemize}
+
+\vspace{6pt}
+\hrule
+\vspace{3pt}
+\footnotesize\color{subcolor}
+数据来源：UCI Machine Learning Repository, Online Retail II（\url{https://archive.ics.uci.edu/dataset/502/online+retail+ii}）\quad
+项目代码与可视化：详见项目仓库 \texttt{README.md}
+
+\end{document}

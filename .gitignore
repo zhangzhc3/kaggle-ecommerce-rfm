@@ -1,0 +1,26 @@
+# Python 虚拟环境
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter 临时文件
+.ipynb_checkpoints/
+
+# 原始数据与中间缓存（README 里给了下载链接，不上传大文件）
+data/*.xlsx
+data/*.zip
+data/*.pkl
+
+# 私人学习与面试材料（不公开）
+LEARNING_NOTES.md
+
+# LaTeX 中间文件
+*.aux
+*.log
+*.out
+*.toc
+
+# 系统杂物
+.DS_Store
+Thumbs.db
